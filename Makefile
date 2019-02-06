@@ -1,7 +1,7 @@
 .PHONY: test sdist wheel release pre-release clean
 
 test:
-	python runtests.py
+	python setup.py test
 
 sdist:
 	python setup.py sdist

@@ -540,7 +540,7 @@ def render_rating_value(value):
         # This should not happen but we should correctly process it
         context_dict['rating_text'] = REVIEW_RATING_CHOICES[0][1]
     else:
-        context_dict['rating_text'] = REVIEW_RATING_CHOICES[round(value)-1][1]
+        context_dict['rating_text'] = REVIEW_RATING_CHOICES[int(round(value))-1][1]
     if value < 0.3:
         # Distinguish reviewed and unreviewed items
         context_dict['rating_star'] = 's05'

@@ -1,0 +1,13 @@
+{# 'static/reviews/css/reviews.css' and 'static/reviews/css/star-rating.css' should be linked somewhere in the parent template #}
+{% load reviews %}
+<dl id="review-list">
+  {% for review in review_list %}
+    <dt id="r{{ review.id }}">
+      {% render_rating_value review.rating %}
+      {{ review.submit_date }} - {{ review.user }}
+    </dt>
+    <dd>
+      <p>{{ review.comment|linebreaks }}</p>
+    </dd>
+  {% endfor %}
+</dl>

@@ -1,0 +1,169 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-31 16:53+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: __init__.py:12
+msgid "Terrible"
+msgstr "Terrible"
+
+#: __init__.py:13
+msgid "Poor"
+msgstr "Poor"
+
+#: __init__.py:14
+msgid "Average"
+msgstr "Average"
+
+#: __init__.py:15
+msgid "Very Good"
+msgstr "Very Good"
+
+#: __init__.py:16
+msgid "Excellent"
+msgstr "Excellent"
+
+#: admin.py:28 forms.py:104
+msgid "Rating"
+msgstr "Rating"
+
+#: admin.py:44 models.py:28
+msgid "rating"
+msgstr "rating"
+
+#: admin.py:53
+msgid "link"
+msgstr "link"
+
+#: admin.py:63
+msgid "Content"
+msgstr "Content"
+
+#: admin.py:67
+msgid "Metadata"
+msgstr "Metadata"
+
+#: admin.py:94
+msgid "approved"
+msgid_plural "approved"
+msgstr[0] "approved"
+msgstr[1] "approved"
+
+#: admin.py:96
+msgid "Approve selected reviews"
+msgstr "Approve selected reviews"
+
+#: admin.py:108
+#, python-format
+msgid "%(count)s review was successfully %(action)s."
+msgid_plural "%(count)s reviews were successfully %(action)s."
+msgstr[0] "%(count)s review was successfully %(action)s."
+msgstr[1] "%(count)s reviews were successfully %(action)s."
+
+#: apps.py:7
+msgid "Reviews"
+msgstr "Reviews"
+
+#: forms.py:103
+msgid "Select a rating"
+msgstr "Select a rating"
+
+#. Translators: 'Comment' is a noun here.
+#: forms.py:108
+msgid "Comment"
+msgstr "Comment"
+
+#: forms.py:180
+#, python-format
+msgid "Rating should be between %(min)d and %(max)d"
+msgstr "Rating should be between %(min)d and %(max)d"
+
+#: forms.py:194
+#, python-format
+msgid "Watch your mouth! The word %s is not allowed here."
+msgid_plural "Watch your mouth! The words %s are not allowed here."
+msgstr[0] "Watch your mouth! The word %s is not allowed here."
+msgstr[1] "Watch your mouth! The words %s are not allowed here."
+
+#: forms.py:198
+msgid "and"
+msgstr "and"
+
+#: models.py:21
+msgid "content type"
+msgstr "content type"
+
+#: models.py:24
+msgid "object ID"
+msgstr "object ID"
+
+#: models.py:27
+msgid "comment"
+msgstr "comment"
+
+#: models.py:29
+msgid "weight"
+msgstr "weight"
+
+#: models.py:45
+msgid "user"
+msgstr "user"
+
+#: models.py:49
+msgid "submitted at"
+msgstr "submitted at"
+
+#: models.py:50
+msgid "IP address"
+msgstr "IP address"
+
+#: models.py:51
+msgid "is public"
+msgstr "is public"
+
+#: models.py:52
+msgid "Check this box to publish review on the site."
+msgstr "Check this box to publish review on the site."
+
+#: models.py:59
+msgid "review"
+msgstr "review"
+
+#: models.py:60
+msgid "reviews"
+msgstr "reviews"
+
+#: models.py:66
+#, python-format
+msgid "%(user)s review of %(object)s"
+msgstr "%(user)s review of %(object)s"
+
+#: templates/reviews/form.html:18
+msgid "Post"
+msgstr "Post"
+
+#: templates/reviews/posted.html:3 templates/reviews/posted.html:6
+msgid "Thank you for your review"
+msgstr "Thank you for your review"
+
+#: templates/reviews/rating.html:25
+#, python-format
+msgid "%(review_count)s review"
+msgid_plural "%(review_count)s reviews"
+msgstr[0] "%(review_count)s review"
+msgstr[1] "%(review_count)s reviews"

@@ -1,0 +1,10 @@
+{% load reviews i18n %}
+{% block title %}
+{% trans "Thank you for your review" %}
+{% endblock %}
+{% block content %}
+<h1>{% trans "Thank you for your review" %}</h1>
+{% if review %}
+<p><a href="{% get_review_permalink review "#r%(id)s" %}">{% get_review_permalink review "#r%(id)s" %}</a></p>
+{% endif %}
+{% endblock %}

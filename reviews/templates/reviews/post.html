@@ -1,0 +1,9 @@
+{% load reviews %}
+{% block content %}
+{% if form %}
+{% include 'reviews/form.html' %}
+{% else %}
+{% load reviews %}
+{% render_review_form for target %}
+{% endif %}
+{% endblock %}

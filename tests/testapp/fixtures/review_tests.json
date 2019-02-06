@@ -1,0 +1,49 @@
+[
+  {
+    "model" : "testapp.article",
+    "pk" : 1,
+    "fields" : {
+        "headline" : "Man Bites Dog",
+        "body" : "This is the body",
+        "pub_date" : "2008-01-01"
+    }
+  },
+  {
+    "model" : "testapp.article",
+    "pk" : 2,
+    "fields" : {
+        "headline" : "Dog Bites Man",
+        "body" : "Text here",
+        "pub_date" : "2008-01-02"
+    }
+  },
+  {
+    "model" : "testapp.product",
+    "pk" : 1,
+    "fields" : {
+        "title" : "Box",
+	"price" : 2.23,
+        "enable_reviews" : true
+    }
+  },
+  {
+    "model" : "testapp.product",
+    "pk" : 2,
+    "fields" : {
+        "title" : "Fox",
+        "price" : 3.15,
+        "enable_reviews" : false
+    }
+  },
+  {
+    "model" : "auth.user",
+    "pk" : 100,
+    "fields" : {
+        "username" : "normaluser",
+        "password" : "34ea4aaaf24efcbb4b30d27302f8657f",
+        "first_name": "Joe",
+        "last_name": "Normal",
+        "email": "joe.normal@example.com"
+    }
+  }
+]

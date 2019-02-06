@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+include MANIFEST.in
+recursive-include reviews *.py *.html *.js *.css *.svg *.po *.mo

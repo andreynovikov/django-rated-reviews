@@ -1,0 +1,1 @@
+<span class="gl-star-rating-stars {{ rating_star }} readonly"{% if rating %} title="{{ rating }}{% if show_rating_text %} ({{ rating_text }}){% endif %}"{% endif %}>{% for choice in rating_choices %}<span data-value="{{ choice.0 }}" data-text="{{ choice.1 }}"></span>{% endfor %}</span>

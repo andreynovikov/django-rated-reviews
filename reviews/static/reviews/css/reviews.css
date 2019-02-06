@@ -1,0 +1,38 @@
+/* list.html template */
+#review-list .gl-star-rating-stars {
+ vertical-align: text-top;
+}
+#review-list .gl-star-rating-stars > span {
+  width: 14px; height: 14px; background-size: 14px; margin: 0 0 0 0;
+}
+/* rating_average.html */
+.star-rating, .star-rating > .star-rating-details {
+  display: inline-block;
+}
+/* rating_value.html */
+.gl-star-rating-stars.readonly {
+  cursor: default;
+}
+.gl-star-rating-stars.s05 > span:nth-child(1),
+.gl-star-rating-stars.s15 > span:nth-child(2),
+.gl-star-rating-stars.s25 > span:nth-child(3),
+.gl-star-rating-stars.s35 > span:nth-child(4),
+.gl-star-rating-stars.s45 > span:nth-child(5),
+.gl-star-rating-stars.s55 > span:nth-child(6),
+.gl-star-rating-stars.s65 > span:nth-child(7),
+.gl-star-rating-stars.s75 > span:nth-child(8),
+.gl-star-rating-stars.s85 > span:nth-child(9),
+.gl-star-rating-stars.s95 > span:nth-child(10) {
+  background-image: url(../img/star-half.svg);
+}
+.gl-star-rating-stars.s15 > span:nth-child(-1n+1),
+.gl-star-rating-stars.s25 > span:nth-child(-1n+2),
+.gl-star-rating-stars.s35 > span:nth-child(-1n+3),
+.gl-star-rating-stars.s45 > span:nth-child(-1n+4),
+.gl-star-rating-stars.s55 > span:nth-child(-1n+5),
+.gl-star-rating-stars.s65 > span:nth-child(-1n+6),
+.gl-star-rating-stars.s75 > span:nth-child(-1n+7),
+.gl-star-rating-stars.s85 > span:nth-child(-1n+8),
+.gl-star-rating-stars.s95 > span:nth-child(-1n+9) {
+  background-image: url(../img/star-full.svg);
+}

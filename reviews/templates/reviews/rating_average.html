@@ -1,0 +1,22 @@
+{% load i18n %}
+{% block rating_container %}
+<span class="star-rating"{% if average_rating %} itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating"{% endif %}>
+{% if average_rating %}
+<meta itemprop="worstRating" content="1" />
+<meta itemprop="bestRating" content="{{ rating_choices|length }}" />
+<meta itemprop="ratingValue" content="{{ average_rating }}" />
+<meta itemprop="ratingCount" content="{{ review_count }}" />
+<meta itemprop="reviewCount" content="{{ review_count }}" />
+{% endif %}
+{% block rating_stars %}
+{% include "reviews/rating_value.html" with rating=average_rating rating_star=average_rating_star rating_text=average_rating_text %}
+{% endblock rating_stars %}
+{% block rating_details %}
+{% if show_rating_text and average_rating %}
+<span class="star-rating-details">
+{% blocktrans count review_count=review_count %}{{ review_count }} review{% plural %}{{ review_count }} reviews{% endblocktrans %}:
+<strong>{{ average_rating }}</strong> ({{ average_rating_text }})</span>
+{% endif %}
+{% endblock rating_details %}
+</span>
+{% endblock rating_container %}

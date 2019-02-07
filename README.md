@@ -40,7 +40,7 @@ Run ```manage.py migrate``` so that Django will create the review tables.
 
 Add the reviews app’s URLs to your project’s urls.py:
 
-```
+```python
 urlpatterns = [
     ...
     url(r'^reviews/', include('reviews.urls')),
@@ -70,7 +70,7 @@ The maximum review form timeout in seconds. The default value is ```2 * 60 * 60`
 
 Custom rating choices, each represented by one star (currently the maximum supported number is 10). Default choices are:
 
-```
+```python
 REVIEW_RATING_CHOICES = (
     ('1', _('Terrible')),
     ('2', _('Poor')),

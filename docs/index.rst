@@ -18,4 +18,5 @@ Contents
    :maxdepth: 1
 
    quickstart
+   templatetags
    models

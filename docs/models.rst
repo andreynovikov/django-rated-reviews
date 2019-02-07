@@ -1,6 +1,5 @@
 =================
-review models
+Review models
 =================
 
 .. autoclass:: reviews.models.Review
-   :members:

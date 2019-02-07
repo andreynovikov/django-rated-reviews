@@ -1,6 +1,7 @@
 # Rated reviews application for Django
 
 [![Build Status](https://travis-ci.com/andreynovikov/django-rated-reviews.svg?branch=master)](https://travis-ci.com/andreynovikov/django-rated-reviews)
+[![Documentation Status](https://img.shields.io/readthedocs/django-rated-reviews.svg?style=flat)](https://readthedocs.org/projects/django-rated-reviews/)
 [![GitHub release](https://img.shields.io/github/release/andreynovikov/django-rated-reviews.svg)](https://github.com/andreynovikov/django-rated-reviews/releases/latest)
 [![PyPI release](https://img.shields.io/pypi/v/django-rated-reviews.svg)](https://pypi.org/project/django-rated-reviews/)
 [![Python version](https://img.shields.io/pypi/pyversions/django-rated-reviews.svg)](https://pypi.org/project/django-rated-reviews/)

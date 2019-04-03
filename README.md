@@ -89,6 +89,11 @@ If ```True``` (default) rating text (as specified by choices) is displayed next 
 
 If ```False``` review comment is checked against words in ```PROFANITIES_LIST```. If it contains any of the words, review is rejected.
 
+### REVIEW_ADMIN_LINK_SYMBOL
+
+Review admin exposes a link to review on a web site. By default it is shown as &#9654;. It can be changed to any other symbol or text,
+e.g. if Font Awesome is attached to admin the following setting can be used: ```'<i class="fas fa-external-link-alt"></i>'```.
+
 ### REVIEW_APP
 
 Custom reviews app can be set that will define custom ```ReviewForm```, ```Review``` model or rating weight system.

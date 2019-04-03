@@ -4,13 +4,14 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, ungettext
 
 from . import get_model, DEFAULT_REVIEW_RATING_CHOICES
 from .models import Review
 
 REVIEW_RATING_CHOICES = getattr(settings, 'REVIEW_RATING_CHOICES', DEFAULT_REVIEW_RATING_CHOICES)
-
+REVIEW_ADMIN_LINK_SYMBOL = getattr(settings, 'REVIEW_ADMIN_LINK_SYMBOL', '&#9654;')
 
 class UsernameSearch(object):
     """The User object may not be auth.User, so we need to provide
@@ -36,6 +37,7 @@ class ReviewAdminForm(forms.ModelForm):
 
 
 class ReviewAdmin(admin.ModelAdmin):
+    @mark_safe
     def rating_text(self, obj):
         html = "<span style='display: inline-block; vertical-align: text-top; width: {}px; height: 12px; " \
             + "background: url({}reviews/img/star-full.svg)'>&nbsp;</span>&nbsp;{}{}"
@@ -43,15 +45,14 @@ class ReviewAdmin(admin.ModelAdmin):
         return html.format(obj.rating * 12, settings.STATIC_URL, REVIEW_RATING_CHOICES[obj.rating - 1][1], weight)
     rating_text.short_description = _('rating')
     rating_text.admin_order_field = 'rating'
-    rating_text.allow_tags = True
 
+    @mark_safe
     def link(self, obj):
         if obj.is_public:
-            return '<a href="{}">&#9654;</a>'.format(obj.get_absolute_url())
+            return '<a href="{}">{}</a>'.format(obj.get_absolute_url(), REVIEW_ADMIN_LINK_SYMBOL)
         else:
             return ''
     link.short_description = _('link')
-    link.allow_tags = True
 
     form = ReviewAdminForm
     fieldsets = (

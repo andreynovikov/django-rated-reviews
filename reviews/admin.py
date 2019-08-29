@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, ungettext
 
-from . import get_model, DEFAULT_REVIEW_RATING_CHOICES
+from . import get_review_model, DEFAULT_REVIEW_RATING_CHOICES
 from .models import Review
 from .widgets import ObjectPkWidget
 
@@ -115,6 +115,6 @@ class ReviewAdmin(admin.ModelAdmin):
 
 # Only register the default admin if the model is the built-in comment model
 # (this won't be true if there's a custom reviews app).
-Klass = get_model()
+Klass = get_review_model()
 if Klass._meta.app_label == "reviews":
     admin.site.register(Klass, ReviewAdmin)

@@ -10,7 +10,7 @@ from django.utils.text import get_text_list
 from django.utils import timezone
 from django.utils.translation import ungettext, ugettext, ugettext_lazy as _
 
-from . import get_model, DEFAULT_REVIEW_RATING_CHOICES
+from . import get_review_model, DEFAULT_REVIEW_RATING_CHOICES
 
 
 REVIEW_MAX_LENGTH = getattr(settings, 'REVIEW_MAX_LENGTH', 3000)
@@ -155,7 +155,7 @@ class ReviewDetailsForm(ReviewSecurityForm):
         reviews apps should override this, get_review_create_data to provide
         custom review models.
         """
-        return get_model()
+        return get_review_model()
 
     def get_review_create_data(self, site_id=None):
         """

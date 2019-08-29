@@ -9,7 +9,7 @@ from django.forms.models import model_to_dict
 from django.utils.encoding import smart_text
 from django.urls import reverse
 
-from .. import get_model, get_form, get_form_target, DEFAULT_REVIEW_RATING_CHOICES
+from .. import get_review_model, get_review_form as get_form, get_review_form_target, DEFAULT_REVIEW_RATING_CHOICES
 
 
 SHOW_RATING_TEXT = getattr(settings, 'REVIEW_SHOW_RATING_TEXT', True)
@@ -69,7 +69,7 @@ class BaseReviewNode(template.Node):
         if ctype is None and object_expr is None:
             raise template.TemplateSyntaxError(
                 "Review nodes must be given either a literal object or a ctype and object pk.")
-        self.review_model = get_model()
+        self.review_model = get_review_model()
         self.as_varname = as_varname
         self.ctype = ctype
         self.object_pk_expr = object_pk_expr
@@ -458,7 +458,7 @@ def review_form_target():
 
         <form action="{% review_form_target %}" method="post">
     """
-    return get_form_target()
+    return get_review_form_target()
 
 
 @register.simple_tag

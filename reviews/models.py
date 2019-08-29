@@ -39,9 +39,9 @@ class BaseReviewAbstractModel(models.Model):
         return reverse("review-url-redirect", args=(self.content_type_id, self.object_pk))
 
 
-class Review(BaseReviewAbstractModel):
+class UserReviewAbstractModel(BaseReviewAbstractModel):
     """
-    A user review for some object.
+    Abstract class for user review for some object.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                              blank=True, null=True, related_name="%(class)s_comments",
@@ -55,6 +55,7 @@ class Review(BaseReviewAbstractModel):
     objects = ReviewManager()
 
     class Meta:
+        abstract = True
         ordering = ('-submit_date',)
         permissions = [("can_moderate", "Can moderate reviews")]
         verbose_name = _('review')
@@ -69,4 +70,12 @@ class Review(BaseReviewAbstractModel):
     def save(self, *args, **kwargs):
         if self.submit_date is None:
             self.submit_date = timezone.now()
-        super(Review, self).save(*args, **kwargs)
+        super(UserReviewAbstractModel, self).save(*args, **kwargs)
+
+
+class Review(UserReviewAbstractModel):
+    """
+    A user review for some object.
+    """
+    class Meta(UserReviewAbstractModel.Meta):
+        pass

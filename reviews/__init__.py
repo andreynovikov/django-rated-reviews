@@ -49,43 +49,43 @@ def get_review_app_name():
     return getattr(settings, 'REVIEW_APP', DEFAULT_REVIEW_APP)
 
 
-def get_model():
+def get_review_model():
     """
     Returns the review model class.
     """
-    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_model"):
-        return get_review_app().get_model()
+    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_model"):
+        return get_review_app().get_review_model()
     else:
         from reviews.models import Review
         return Review
 
 
-def get_form():
+def get_review_form():
     """
     Returns the review ModelForm class.
     """
-    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_form"):
-        return get_review_app().get_form()
+    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_form"):
+        return get_review_app().get_review_form()
     else:
         from reviews.forms import ReviewForm
         return ReviewForm
 
 
-def get_form_target():
+def get_review_form_target():
     """
     Returns the target URL for the review form submission view.
     """
-    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_form_target"):
-        return get_review_app().get_form_target()
+    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_form_target"):
+        return get_review_app().get_review_form_target()
     else:
         return reverse("post-review")
 
 
-def get_user_weight(user, target):
+def get_review_user_weight(user, target):
     """
     Returns the rating weight for specific user.
     """
-    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_user_weight"):
-        return get_review_app().get_user_weight(user, target)
+    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_user_weight"):
+        return get_review_app().get_review_user_weight(user, target)
     else:
         return 1

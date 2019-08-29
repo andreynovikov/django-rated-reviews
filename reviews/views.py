@@ -18,7 +18,7 @@ from django.utils.http import is_safe_url
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 
-from . import signals, get_model, get_form, get_user_weight
+from . import signals, get_review_model, get_review_form, get_review_user_weight
 
 
 SHOW_RATING_TEXT = getattr(settings, 'REVIEW_SHOW_RATING_TEXT', True)
@@ -65,7 +65,7 @@ def post_review(request, next=None, using=None):
         return ReviewPostBadRequest("Attempting to get content-type %r and object PK %r exists raised %s" % (escape(ctype), escape(object_pk), e.__class__.__name__))
 
     # Construct the review form
-    form = get_form()(target, data=data)
+    form = get_review_form()(target, data=data)
 
     # Check security information
     if form.security_errors():
@@ -103,7 +103,7 @@ def post_review(request, next=None, using=None):
         if request.user.is_authenticated:
             review.user = request.user
 
-    review.weight = get_user_weight(request.user, target)
+    review.weight = get_review_user_weight(request.user, target)
     review.ip_address = request.META.get("REMOTE_ADDR", None) or None
 
     # Save the review and signal that it was saved
@@ -144,7 +144,7 @@ def review_done(request):
     template="reviews/posted.html"
     if 'r' in request.GET:
         try:
-            review = get_model().objects.get(pk=request.GET['r'])
+            review = get_review_model().objects.get(pk=request.GET['r'])
         except (ObjectDoesNotExist, ValueError):
             pass
     return render(request, template, {'review': review})

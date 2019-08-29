@@ -22,11 +22,18 @@ class ReviewAppAPITests(ReviewTestCase):
         with self.assertRaisesMessage(ImproperlyConfigured, msg):
             reviews.get_review_app()
 
+    def testGetModel(self):
+        self.assertEqual(reviews.get_review_model(), Review)
+
     def testGetForm(self):
-        self.assertEqual(reviews.get_form(), ReviewForm)
+        self.assertEqual(reviews.get_review_form(), ReviewForm)
 
     def testGetFormTarget(self):
-        self.assertEqual(reviews.get_form_target(), "/post/")
+        self.assertEqual(reviews.get_review_form_target(), "/post/")
+
+    def testGetUserWeight(self):
+        r1, _, _, _ = self.createSomeReviews()
+        self.assertEqual(reviews.get_review_user_weight(r1.user, r1.content_object), 1)
 
 
 @override_settings(
@@ -40,11 +47,15 @@ class CustomReviewTest(ReviewTestCase):
 
     def testGetModel(self):
         from custom_reviews.models import CustomReview
-        self.assertEqual(reviews.get_model(), CustomReview)
+        self.assertEqual(reviews.get_review_model(), CustomReview)
 
     def testGetForm(self):
         from custom_reviews.forms import CustomReviewForm
-        self.assertEqual(reviews.get_form(), CustomReviewForm)
+        self.assertEqual(reviews.get_review_form(), CustomReviewForm)
 
     def testGetFormTarget(self):
-        self.assertEqual(reviews.get_form_target(), "/post/")
+        self.assertEqual(reviews.get_review_form_target(), "/post/")
+
+    def testGetUserWeight(self):
+        r1, _, _, _ = self.createSomeReviews()
+        self.assertEqual(reviews.get_review_user_weight(r1.user, r1.content_object), 2)

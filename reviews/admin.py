@@ -9,9 +9,12 @@ from django.utils.translation import ugettext_lazy as _, ungettext
 
 from . import get_model, DEFAULT_REVIEW_RATING_CHOICES
 from .models import Review
+from .widgets import ObjectPkWidget
+
 
 REVIEW_RATING_CHOICES = getattr(settings, 'REVIEW_RATING_CHOICES', DEFAULT_REVIEW_RATING_CHOICES)
 REVIEW_ADMIN_LINK_SYMBOL = getattr(settings, 'REVIEW_ADMIN_LINK_SYMBOL', '&#9654;')
+
 
 class UsernameSearch(object):
     """The User object may not be auth.User, so we need to provide
@@ -27,13 +30,11 @@ class ReviewAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ReviewAdminForm, self).__init__(*args, **kwargs)
         self.fields['rating'] = forms.ChoiceField(label=_('Rating'), choices=REVIEW_RATING_CHOICES)
+        self.fields['object_pk'].widget = ObjectPkWidget(self.instance)
 
     class Meta:
         model = Review
         fields = '__all__'
-        widgets = {
-            'object_pk': forms.widgets.TextInput
-        }
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -70,7 +71,7 @@ class ReviewAdmin(admin.ModelAdmin):
         ),
     )
 
-    list_display = ('user', 'content_type', 'object_pk', 'rating_text', 'ip_address',
+    list_display = ('rating_text', 'content_type', 'object_pk', 'user', 'ip_address',
                     'submit_date', 'is_public', 'link')
     list_filter = ('submit_date', 'site', 'is_public', 'rating')
     date_hierarchy = 'submit_date'

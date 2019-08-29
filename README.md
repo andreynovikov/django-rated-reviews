@@ -98,6 +98,25 @@ e.g. if Font Awesome is attached to admin the following setting can be used: ```
 
 Custom reviews app can be set that will define custom ```ReviewForm```, ```Review``` model or rating weight system.
 
+### Examples
+
+#### Custom rating weight definition
+
+```python
+def get_review_user_weight(user, target):
+    if user.has_perm('reviews.can_moderate'):
+        return 50
+    from .models import Product, Order
+    if isinstance(target, Product):
+        count = Order.objects.filter(user=user.pk,
+                                     item__product=target.pk,
+                                     status=Order.STATUS_DONE
+                                     ).count()
+        if count > 0:
+            return 10
+    return 1
+```
+
 ## Credits
 
 Application code is derived from [Django “excontrib” Comments](https://github.com/django/django-contrib-comments/).

@@ -55,19 +55,19 @@ Use the review template tags to embed reviews in your templates.
 
 All configuration settings are optional.
 
-### REVIEW_MAX_LENGTH
+#### REVIEW_MAX_LENGTH
 
 The maximum length of the review comment field, in characters. Comments longer than this will be rejected. Defaults to ```3000```.
 
-### REVIEW_PUBLISH_UNMODERATED
+#### REVIEW_PUBLISH_UNMODERATED
 
 If ```False``` (default) reviews are not published until they are moderated in admin. If user modifies existing review it is considered unmoderated again.
 
-### REVIEW_COMPOSE_TIMEOUT
+#### REVIEW_COMPOSE_TIMEOUT
 
 The maximum review form timeout in seconds. The default value is ```2 * 60 * 60``` (2 hours).
 
-### REVIEW_RATING_CHOICES
+#### REVIEW_RATING_CHOICES
 
 Custom rating choices, each represented by one star (currently the maximum supported number is 10). Default choices are:
 
@@ -81,20 +81,20 @@ REVIEW_RATING_CHOICES = (
 )
 ```
 
-### REVIEW_SHOW_RATING_TEXT
+#### REVIEW_SHOW_RATING_TEXT
 
 If ```True``` (default) rating text (as specified by choices) is displayed next to rating stars. 
 
-### REVIEW_ALLOW_PROFANITIES
+#### REVIEW_ALLOW_PROFANITIES
 
 If ```False``` review comment is checked against words in ```PROFANITIES_LIST```. If it contains any of the words, review is rejected.
 
-### REVIEW_ADMIN_LINK_SYMBOL
+#### REVIEW_ADMIN_LINK_SYMBOL
 
 Review admin exposes a link to review on a web site. By default it is shown as &#9654;. It can be changed to any other symbol or text,
 e.g. if Font Awesome is attached to admin the following setting can be used: ```'<i class="fas fa-external-link-alt"></i>'```.
 
-### REVIEW_APP
+#### REVIEW_APP
 
 Custom reviews app can be set that will define custom ```ReviewForm```, ```Review``` model or rating weight system.
 

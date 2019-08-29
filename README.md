@@ -14,6 +14,8 @@ Rated reviews is derived from [Django “excontrib” Comments](https://github.c
 
 Optionally rating can be weighted. For instance, you can designate experts whose rating would be more valuable. Alternatively, add weight to reviews of real byers of sold product.
 
+[Documentation is published](https://django-rated-reviews.readthedocs.io/) on Read the Docs.
+
 ## Requirements
 
 * Python 2.7+ or Python 3.3+

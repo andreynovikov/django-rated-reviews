@@ -14,6 +14,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/andreynovikov/django-rated-reviews/tree/master',
     project_urls={
+        'Documentation': 'https://django-rated-reviews.readthedocs.io/',
         'Source': 'https://github.com/andreynovikov/django-rated-reviews/',
         'Tracker': 'https://github.com/andreynovikov/django-rated-reviews/issues',
     },

@@ -8,7 +8,7 @@ from django.utils.crypto import salted_hmac, constant_time_compare
 from django.utils.encoding import force_text
 from django.utils.text import get_text_list
 from django.utils import timezone
-from django.utils.translation import ungettext, ugettext, ugettext_lazy as _
+from django.utils.translation import ungettext, ugettext, gettext_lazy as _
 
 from . import get_review_model, DEFAULT_REVIEW_RATING_CHOICES
 

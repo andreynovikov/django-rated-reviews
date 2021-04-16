@@ -24,18 +24,18 @@ matrix:
 
       - { python: "3.8", env: DJANGO_VERSION="2.2.*" }
       - { python: "3.8", env: DJANGO_VERSION="3.2.*" }
-      - { python: "3.8", env: DJANGO_VERSION=master }
+      - { python: "3.8", env: DJANGO_VERSION=dev }
 
       - { python: "3.9", env: DJANGO_VERSION="3.2.*" }
-      - { python: "3.9", env: DJANGO_VERSION=master }
+      - { python: "3.9", env: DJANGO_VERSION=dev }
 
     allow_failures:
-      - env: DJANGO_VERSION=master
+      - env: DJANGO_VERSION=dev
 
 install:
     - pip install coverage
     - pip install codacy-coverage
-    - if [[ $DJANGO_VERSION == master ]]; then pip install -e git+https://github.com/django/django@master#egg=django
+    - if [[ $DJANGO_VERSION == dev ]]; then pip install -e git+https://github.com/django/django@main#egg=django
       -U; else pip install Django==${DJANGO_VERSION} -U; fi
 
 branches:

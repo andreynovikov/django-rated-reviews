@@ -8,7 +8,11 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, resolve_url
 from django.template.loader import render_to_string
 from django.utils.html import escape
-from django.utils.http import is_safe_url
+try:
+    from django.utils.http import url_has_allowed_host_and_scheme
+except ImportError:
+    # Django 1.11, 2.*
+    from django.utils.http import is_safe_url as url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 
@@ -116,7 +120,7 @@ def next_redirect(request, fallback, **get_kwargs):
     Returns an ``HttpResponseRedirect``.
     """
     next = request.POST.get('next')
-    if not is_safe_url(url=next, allowed_hosts={request.get_host()}):
+    if not url_has_allowed_host_and_scheme(url=next, allowed_hosts={request.get_host()}):
         next = resolve_url(fallback)
 
     if get_kwargs:

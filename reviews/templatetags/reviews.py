@@ -6,7 +6,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Sum, F, FloatField
 from django.db.models.functions import Cast
 from django.forms.models import model_to_dict
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 
 from .. import get_review_model, get_review_form as get_form, get_review_form_target, DEFAULT_REVIEW_RATING_CHOICES
 
@@ -94,7 +94,7 @@ class BaseReviewNode(template.Node):
 
         qs = self.review_model.objects.filter(
             content_type=ctype,
-            object_pk=smart_text(object_pk),
+            object_pk=smart_str(object_pk),
             site__pk=site_id,
         )
 
@@ -167,7 +167,7 @@ class ReviewFormNode(BaseReviewNode):
                     content_type = ContentType.objects.get_for_model(obj)
                     review = self.review_model.objects.get(
                         content_type=content_type,
-                        object_pk=smart_text(obj.pk),
+                        object_pk=smart_str(obj.pk),
                         site__pk=site_id,
                         user=context['request'].user
                     )

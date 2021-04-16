@@ -1,4 +1,3 @@
-sudo: false
 language: python
 cache: pip
 
@@ -34,9 +33,10 @@ matrix:
       - env: DJANGO_VERSION=master
 
 install:
-    - pip install Django==${DJANGO_VERSION}
     - pip install coverage
     - pip install codacy-coverage
+    - if [[ $DJANGO_VERSION == master ]]; then pip install -e git+https://github.com/django/django@master#egg=django
+      -U; else pip install Django==${DJANGO_VERSION} -U; fi
 
 branches:
   only:

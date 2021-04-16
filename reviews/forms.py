@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.forms.utils import ErrorDict
 from django.utils.crypto import salted_hmac, constant_time_compare
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.text import get_text_list
 from django.utils import timezone
 from django.utils.translation import ngettext, gettext, gettext_lazy as _
@@ -128,7 +128,7 @@ class ReviewDetailsForm(ReviewSecurityForm):
 
         if review.content_type != ContentType.objects.get_for_model(self.target_object):
             raise ValueError("Object content type spoofed")
-        if review.object_pk != force_text(self.target_object._get_pk_val()):
+        if review.object_pk != force_str(self.target_object._get_pk_val()):
             raise ValueError("Object pk spoofed")
         review.rating = self.cleaned_data["rating"]
         review.comment = self.cleaned_data["comment"]
@@ -164,7 +164,7 @@ class ReviewDetailsForm(ReviewSecurityForm):
         """
         return dict(
             content_type=ContentType.objects.get_for_model(self.target_object),
-            object_pk=force_text(self.target_object._get_pk_val()),
+            object_pk=force_str(self.target_object._get_pk_val()),
             rating=self.cleaned_data["rating"],
             comment=self.cleaned_data["comment"],
             submit_date=timezone.now(),

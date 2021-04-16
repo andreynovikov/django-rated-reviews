@@ -1,10 +1,4 @@
-from __future__ import absolute_import
-
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    # Python 2
-    from urllib import urlencode
+from urllib.parse import urlencode
 
 from django import http
 from django.apps import apps
@@ -32,7 +26,7 @@ class ReviewPostBadRequest(http.HttpResponseBadRequest):
     """
 
     def __init__(self, why):
-        super(ReviewPostBadRequest, self).__init__()
+        super().__init__()
         if settings.DEBUG:
             self.content = render_to_string("reviews/400-debug.html", {"why": why})
 
@@ -79,14 +73,13 @@ def post_review(request, next=None, using=None):
             "reviews/post.html",
         ]
         return render(request, template_list, {
-                "target": target,
-                "comment": form.data.get("comment", ""),
-                "rating": form.data.get("rating", ""),
-                "form": form,
-                "next": data.get("next", next),
-                "show_rating_text": SHOW_RATING_TEXT,
-            },
-        )
+            "target": target,
+            "comment": form.data.get("comment", ""),
+            "rating": form.data.get("rating", ""),
+            "form": form,
+            "next": data.get("next", next),
+            "show_rating_text": SHOW_RATING_TEXT
+        })
 
     # Get existing review
     if form.cleaned_data["id"] is not None:
@@ -141,7 +134,7 @@ def next_redirect(request, fallback, **get_kwargs):
 
 def review_done(request):
     review = None
-    template="reviews/posted.html"
+    template = "reviews/posted.html"
     if 'r' in request.GET:
         try:
             review = get_review_model().objects.get(pk=request.GET['r'])

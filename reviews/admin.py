@@ -1,11 +1,9 @@
-from __future__ import unicode_literals
-
 from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _, ungettext
+from django.utils.translation import gettext_lazy as _, ngettext
 
 from . import get_review_model, DEFAULT_REVIEW_RATING_CHOICES
 from .models import Review
@@ -28,7 +26,7 @@ class UsernameSearch(object):
 
 class ReviewAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ReviewAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['rating'] = forms.ChoiceField(label=_('Rating'), choices=REVIEW_RATING_CHOICES)
         self.fields['object_pk'].widget = ObjectPkWidget(self.instance)
 
@@ -80,7 +78,7 @@ class ReviewAdmin(admin.ModelAdmin):
     actions = ['approve_reviews']
 
     def get_actions(self, request):
-        actions = super(ReviewAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         if not request.user.has_perm('reviews.can_moderate'):
             if 'approve_reviews' in actions:
                 actions.pop('approve_reviews')
@@ -93,7 +91,7 @@ class ReviewAdmin(admin.ModelAdmin):
 
     def approve_reviews(self, request, queryset):
         self._bulk_flag(request, queryset, self.perform_approve,
-                        lambda n: ungettext('approved', 'approved', n))
+                        lambda n: ngettext('approved', 'approved', n))
 
     approve_reviews.short_description = _("Approve selected reviews")
 
@@ -107,9 +105,9 @@ class ReviewAdmin(admin.ModelAdmin):
             action(review)
             n_reviews += 1
 
-        msg = ungettext('%(count)s review was successfully %(action)s.',
-                        '%(count)s reviews were successfully %(action)s.',
-                        n_reviews)
+        msg = ngettext('%(count)s review was successfully %(action)s.',
+                       '%(count)s reviews were successfully %(action)s.',
+                       n_reviews)
         self.message_user(request, msg % {'count': n_reviews, 'action': done_message(n_reviews)})
 
 

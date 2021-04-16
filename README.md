@@ -18,7 +18,7 @@ Optionally rating can be weighted. For instance, you can designate experts whose
 
 ## Requirements
 
-* Python 2.7+ or Python 3.3+
+* Python 3.3+
 * Django 1.11+
 
 ## Installation

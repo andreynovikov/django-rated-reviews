@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -17,9 +15,9 @@ from . import ReviewTestCase
 class ReviewTemplateTagTests(ReviewTestCase):
 
     def setUp(self):
-        super(ReviewTemplateTagTests, self).setUp()
+        super().setUp()
         self.site_2 = Site.objects.create(id=settings.SITE_ID + 1,
-            domain="testserver", name="testserver")
+                                          domain="testserver", name="testserver")
 
     def render(self, t, **c):
         ctx = Context(c)

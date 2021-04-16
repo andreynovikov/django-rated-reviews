@@ -8,7 +8,7 @@ from django.utils.crypto import salted_hmac, constant_time_compare
 from django.utils.encoding import force_text
 from django.utils.text import get_text_list
 from django.utils import timezone
-from django.utils.translation import ungettext, ugettext, ugettext_lazy as _
+from django.utils.translation import ngettext, gettext, gettext_lazy as _
 
 from . import get_review_model, DEFAULT_REVIEW_RATING_CHOICES
 
@@ -17,6 +17,7 @@ REVIEW_MAX_LENGTH = getattr(settings, 'REVIEW_MAX_LENGTH', 3000)
 REVIEW_PUBLISH_UNMODERATED = getattr(settings, 'REVIEW_PUBLISH_UNMODERATED', False)
 DEFAULT_REVIEW_TIMEOUT = getattr(settings, 'REVIEW_COMPOSE_TIMEOUT', (2 * 60 * 60))  # 2h
 REVIEW_RATING_CHOICES = getattr(settings, 'REVIEW_RATING_CHOICES', DEFAULT_REVIEW_RATING_CHOICES)
+
 
 class ReviewSecurityForm(forms.Form):
     """
@@ -33,7 +34,7 @@ class ReviewSecurityForm(forms.Form):
         if initial is None:
             initial = {}
         initial.update(self.generate_security_data())
-        super(ReviewSecurityForm, self).__init__(data=data, initial=initial, **kwargs)
+        super().__init__(data=data, initial=initial, **kwargs)
 
     def security_errors(self):
         """Return just those errors associated with security"""
@@ -102,7 +103,7 @@ class ReviewDetailsForm(ReviewSecurityForm):
     """
     rating_choices = (("", _("Select a rating")),) + REVIEW_RATING_CHOICES
     rating = forms.IntegerField(label=_('Rating'),
-                                widget=forms.Select(choices=rating_choices, attrs={'class':'star-rating'}),
+                                widget=forms.Select(choices=rating_choices, attrs={'class': 'star-rating'}),
                                 required=True)
     # Translators: 'Comment' is a noun here.
     comment = forms.CharField(label=_('Comment'),
@@ -114,7 +115,7 @@ class ReviewDetailsForm(ReviewSecurityForm):
         minified = '' if settings.DEBUG else '.min'
         css = {
             'all': ('reviews/css/star-rating{}.css'.format(minified),)
-            }
+        }
         js = ('reviews/js/star-rating{}.js'.format(minified),)
 
     def update_review_object(self, review):
@@ -132,7 +133,7 @@ class ReviewDetailsForm(ReviewSecurityForm):
         review.rating = self.cleaned_data["rating"]
         review.comment = self.cleaned_data["comment"]
         review.submit_date = timezone.now()
-        review.is_public=REVIEW_PUBLISH_UNMODERATED
+        review.is_public = REVIEW_PUBLISH_UNMODERATED
 
     def get_review_object(self, site_id=None):
         """
@@ -186,22 +187,21 @@ class ReviewDetailsForm(ReviewSecurityForm):
         contain anything in PROFANITIES_LIST.
         """
         comment = self.cleaned_data["comment"]
-        if (not getattr(settings, 'REVIEW_ALLOW_PROFANITIES', False) and
-                getattr(settings, 'PROFANITIES_LIST', False)):
+        if (not getattr(settings, 'REVIEW_ALLOW_PROFANITIES', False) and getattr(settings, 'PROFANITIES_LIST', False)):
             bad_words = [w for w in settings.PROFANITIES_LIST if w in comment.lower()]
             if bad_words:
-                raise forms.ValidationError(ungettext(
+                raise forms.ValidationError(ngettext(
                     "Watch your mouth! The word %s is not allowed here.",
                     "Watch your mouth! The words %s are not allowed here.",
                     len(bad_words)) % get_text_list(
                     ['"%s%s%s"' % (i[0], '-' * (len(i) - 2), i[-1])
-                     for i in bad_words], ugettext('and')))
+                     for i in bad_words], gettext('and')))
         return comment
 
 
 class ReviewForm(ReviewDetailsForm):
     honeypot = forms.CharField(required=False, label='',
-                               widget=forms.TextInput(attrs={'style':'display:none'}))
+                               widget=forms.TextInput(attrs={'style': 'display:none'}))
 
     def clean_honeypot(self):
         """Check that nothing's been entered into the honeypot."""

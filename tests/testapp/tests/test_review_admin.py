@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.conf import settings
 from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import User
@@ -23,7 +21,7 @@ class MockSuperUser:
 class ReviewAdminTests(ReviewTestCase):
 
     def setUp(self):
-        super(ReviewAdminTests, self).setUp()
+        super().setUp()
         site = AdminSite()
         self.admin = ReviewAdmin(Review, site)
         request_factory = RequestFactory()

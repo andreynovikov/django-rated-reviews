@@ -7,7 +7,6 @@ from django.db.models import Sum, F, FloatField
 from django.db.models.functions import Cast
 from django.forms.models import model_to_dict
 from django.utils.encoding import smart_text
-from django.urls import reverse
 
 from .. import get_review_model, get_review_form as get_form, get_review_form_target, DEFAULT_REVIEW_RATING_CHOICES
 
@@ -142,7 +141,7 @@ class ReviewCountNode(BaseReviewNode):
 class ReviewByUserNode(BaseReviewNode):
     """Insert a user review into the context."""
     def __init__(self, *args, **kwargs):
-        super(ReviewByUserNode, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.filter_public = False
 
     def get_context_value_from_queryset(self, context, qs):
@@ -322,7 +321,7 @@ class RenderRatingAverageNode(RatingAverageNode):
                     # This can not happen but we should correctly process it
                     context_dict['average_rating_text'] = REVIEW_RATING_CHOICES[0][1]
                 else:
-                    context_dict['average_rating_text'] = REVIEW_RATING_CHOICES[round(average)-1][1]
+                    context_dict['average_rating_text'] = REVIEW_RATING_CHOICES[round(average) - 1][1]
                 if average < 0.3:
                     # Distinguish reviewed and unreviewed items
                     context_dict['average_rating_star'] = 's05'
@@ -540,11 +539,10 @@ def render_rating_value(value):
         # This should not happen but we should correctly process it
         context_dict['rating_text'] = REVIEW_RATING_CHOICES[0][1]
     else:
-        context_dict['rating_text'] = REVIEW_RATING_CHOICES[int(round(value))-1][1]
+        context_dict['rating_text'] = REVIEW_RATING_CHOICES[int(round(value)) - 1][1]
     if value < 0.3:
         # Distinguish reviewed and unreviewed items
         context_dict['rating_star'] = 's05'
     else:
         context_dict['rating_star'] = 's{0:02.0f}'.format(round(value * 2.0) * 5.0)
     return context_dict
-

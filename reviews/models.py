@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .managers import ReviewManager
 
@@ -70,7 +70,7 @@ class UserReviewAbstractModel(BaseReviewAbstractModel):
     def save(self, *args, **kwargs):
         if self.submit_date is None:
             self.submit_date = timezone.now()
-        super(UserReviewAbstractModel, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Review(UserReviewAbstractModel):

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from reviews.models import Review
 
 from . import ReviewTestCase

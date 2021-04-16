@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='django-rated-reviews',
-    version='0.6.0',
+    version='1.0.0',
     license='MIT',
     author='Andrey Novikov',
     author_email='novikov@gmail.com',
@@ -22,10 +22,9 @@ setuptools.setup(
     include_package_data=True,
     zip_safe=False,
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 6 - Mature',
         'Framework :: Django',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',

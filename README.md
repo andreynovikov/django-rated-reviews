@@ -21,6 +21,12 @@ Optionally rating can be weighted. For instance, you can designate experts whose
 * Python 3.3+
 * Django 1.11+
 
+## Django Compatibility
+
+* Django 1.11+
+* Django 2.0+
+* Django 3.0+
+
 ## Installation
 
 Install ```django-rated-reviews``` using pip:

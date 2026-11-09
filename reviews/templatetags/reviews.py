@@ -2,13 +2,15 @@ from django import template
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Sum, F, FloatField
 from django.db.models.functions import Cast
 from django.forms.models import model_to_dict
 from django.utils.encoding import smart_str
 
-from .. import get_review_model, get_review_form as get_form, get_review_form_target, DEFAULT_REVIEW_RATING_CHOICES
+from .. import (
+    get_review_model, get_review_site_id, get_review_form as get_form, get_review_form_target,
+    get_review_rating_text, DEFAULT_REVIEW_RATING_CHOICES
+)
 
 
 SHOW_RATING_TEXT = getattr(settings, 'REVIEW_SHOW_RATING_TEXT', True)
@@ -86,11 +88,7 @@ class BaseReviewNode(template.Node):
         if not object_pk:
             return self.review_model.objects.none()
 
-        # Explicit SITE_ID takes precedence over request. This is also how
-        # get_current_site operates.
-        site_id = getattr(settings, "SITE_ID", None)
-        if not site_id and ('request' in context):
-            site_id = get_current_site(context['request']).pk
+        site_id = get_review_site_id(context.get('request'))
 
         qs = self.review_model.objects.filter(
             content_type=ctype,
@@ -160,9 +158,7 @@ class ReviewFormNode(BaseReviewNode):
         if obj:
             field_names = [f.name for f in self.review_model._meta.fields]
             if 'user' in field_names and ('request' in context) and context['request'].user:
-                site_id = getattr(settings, "SITE_ID", None)
-                if not site_id and ('request' in context):
-                    site_id = get_current_site(context['request']).pk
+                site_id = get_review_site_id(context.get('request'))
                 try:
                     content_type = ContentType.objects.get_for_model(obj)
                     review = self.review_model.objects.get(
@@ -317,11 +313,7 @@ class RenderRatingAverageNode(RatingAverageNode):
             if count > 0:
                 average = self.get_context_value_from_queryset(context, qs)
                 context_dict['average_rating'] = '{0:.1f}'.format(average)
-                if average < 1:
-                    # This can not happen but we should correctly process it
-                    context_dict['average_rating_text'] = REVIEW_RATING_CHOICES[0][1]
-                else:
-                    context_dict['average_rating_text'] = REVIEW_RATING_CHOICES[round(average) - 1][1]
+                context_dict['average_rating_text'] = get_review_rating_text(average)
                 if average < 0.3:
                     # Distinguish reviewed and unreviewed items
                     context_dict['average_rating_star'] = 's05'
@@ -533,13 +525,9 @@ def render_rating_value(value):
     context_dict = {
         'rating_choices': REVIEW_RATING_CHOICES,
         'show_rating_text': SHOW_RATING_TEXT,
-        'rating': '{0:.1f}'.format(value)
+        'rating': '{0:.1f}'.format(value),
+        'rating_text': get_review_rating_text(value)
     }
-    if value < 1:
-        # This should not happen but we should correctly process it
-        context_dict['rating_text'] = REVIEW_RATING_CHOICES[0][1]
-    else:
-        context_dict['rating_text'] = REVIEW_RATING_CHOICES[int(round(value)) - 1][1]
     if value < 0.3:
         # Distinguish reviewed and unreviewed items
         context_dict['rating_star'] = 's05'

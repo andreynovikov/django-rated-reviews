@@ -3,20 +3,15 @@ from urllib.parse import urlencode
 from django import http
 from django.apps import apps
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, resolve_url
 from django.template.loader import render_to_string
 from django.utils.html import escape
-try:
-    from django.utils.http import url_has_allowed_host_and_scheme
-except ImportError:
-    # Django 1.11, 2.*
-    from django.utils.http import is_safe_url as url_has_allowed_host_and_scheme
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 
-from . import signals, get_review_model, get_review_form, get_review_user_weight
+from . import signals, get_review_model, get_review_form, get_review_site_id, get_review_user_weight
 
 
 SHOW_RATING_TEXT = getattr(settings, 'REVIEW_SHOW_RATING_TEXT', True)
@@ -96,7 +91,7 @@ def post_review(request, next=None, using=None):
         form.update_review_object(review)
     else:
         # Otherwise create the review
-        review = form.get_review_object(site_id=get_current_site(request).id)
+        review = form.get_review_object(site_id=get_review_site_id(request))
         if request.user.is_authenticated:
             review.user = request.user
 

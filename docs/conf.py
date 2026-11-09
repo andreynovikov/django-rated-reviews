@@ -14,6 +14,7 @@
 #
 import os
 import sys
+import tomllib
 sys.path.insert(0, os.path.abspath('..'))
 import django
 from django.conf import settings
@@ -29,22 +30,25 @@ settings.configure(
         "django.contrib.contenttypes",
         "django.contrib.sessions",
         "django.contrib.sites",
+        "rest_framework",
         "reviews",
     ],
     SITE_ID=1,
+    SECRET_KEY='documentation',
 )
 django.setup()
 
 # -- Project information -----------------------------------------------------
 
 project = 'Django Rated Reviews'
-copyright = '2019, Andrey Novikov'
+copyright = '2019-2026, Andrey Novikov'
 author = 'Andrey Novikov'
 
+with open(os.path.join(os.path.dirname(__file__), '..', 'pyproject.toml'), 'rb') as f:
+    # The full version, including alpha/beta/rc tags
+    release = tomllib.load(f)['project']['version']
 # The short X.Y version
-version = ''
-# The full version, including alpha/beta/rc tags
-release = ''
+version = '.'.join(release.split('.')[:2])
 
 
 # -- General configuration ---------------------------------------------------
@@ -58,6 +62,7 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
 ]
 
@@ -78,7 +83,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -105,7 +110,7 @@ html_theme = 'alabaster'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = []
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -196,6 +201,7 @@ epub_exclude_files = ['search.html']
 # -- Extension configuration -------------------------------------------------
 
 intersphinx_mapping = {
+    'python': ('https://docs.python.org/3/', None),
     'django': (
         'https://docs.djangoproject.com/en/stable/',
         'https://docs.djangoproject.com/en/stable/_objects/'

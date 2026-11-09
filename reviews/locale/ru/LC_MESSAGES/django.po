@@ -42,11 +42,11 @@ msgstr "Отличный"
 
 #: admin.py:28 forms.py:104
 msgid "Rating"
-msgstr "Рейтинг"
+msgstr "Оценка"
 
 #: admin.py:44 models.py:28
 msgid "rating"
-msgstr "рейтинг"
+msgstr "оценка"
 
 #: admin.py:53
 msgid "link"
@@ -87,7 +87,7 @@ msgstr "Обзоры"
 
 #: forms.py:103
 msgid "Select a rating"
-msgstr "Выберите рейтинг"
+msgstr "Выберите оценку"
 
 #. Translators: 'Comment' is a noun here.
 #: forms.py:108
@@ -97,7 +97,7 @@ msgstr "Комментарий"
 #: forms.py:180
 #, python-format
 msgid "Rating should be between %(min)d and %(max)d"
-msgstr "Рейтинг должен быть в промежутке от %(min)d до %(max)d"
+msgstr "Оценка должна быть в промежутке от %(min)d до %(max)d"
 
 #: forms.py:194
 #, python-format

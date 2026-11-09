@@ -14,7 +14,7 @@ CT = ContentType.objects.get_for_model
 
 
 @override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.UnsaltedMD5PasswordHasher',),
+    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
     ROOT_URLCONF='testapp.urls_default',
 )
 class ReviewTestCase(TestCase):

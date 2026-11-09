@@ -19,3 +19,11 @@ def get_review_form_target():
 
 def get_review_user_weight(user, target):
     return 2
+
+
+def get_review_site_id(request):
+    return 42
+
+
+def get_review_rating_text(rating):
+    return "custom {}".format(rating)

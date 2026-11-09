@@ -40,7 +40,7 @@
     "pk" : 100,
     "fields" : {
         "username" : "normaluser",
-        "password" : "34ea4aaaf24efcbb4b30d27302f8657f",
+        "password" : "md5$normaluser$7f01fed951af83dae27bb15a0115b546",
         "first_name": "Joe",
         "last_name": "Normal",
         "email": "joe.normal@example.com"

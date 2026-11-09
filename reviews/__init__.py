@@ -2,6 +2,7 @@ from importlib import import_module
 
 from django.apps import apps as django_apps
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -15,8 +16,6 @@ DEFAULT_REVIEW_RATING_CHOICES = (
     ('4', _('Very Good')),
     ('5', _('Excellent')),
 )
-
-default_app_config = 'reviews.apps.ReviewsAppConfig'
 
 
 def get_review_app():
@@ -62,7 +61,7 @@ def get_review_model():
 
 def get_review_form():
     """
-    Returns the review ModelForm class.
+    Returns the review form class.
     """
     if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_form"):
         return get_review_app().get_review_form()
@@ -81,6 +80,36 @@ def get_review_form_target():
         return reverse("post-review")
 
 
+def get_review_site_id(request):
+    """
+    Returns the ID of the site that reviews are posted to and listed for.
+    ``request`` can be ``None`` (e.g. in templates rendered without request).
+    """
+    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_site_id"):
+        return get_review_app().get_review_site_id(request)
+    else:
+        # Explicit SITE_ID takes precedence over request. This is also how
+        # get_current_site operates.
+        site_id = getattr(settings, "SITE_ID", None)
+        if not site_id and request is not None:
+            site_id = get_current_site(request).pk
+        return site_id
+
+
+def get_review_rating_text(rating):
+    """
+    Returns the text describing a rating, e.g. "Very Good" for 4. The value
+    can be fractional (an average rating): it is rounded to the nearest grade
+    and clamped to the range of REVIEW_RATING_CHOICES.
+    """
+    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_rating_text"):
+        return get_review_app().get_review_rating_text(rating)
+    else:
+        choices = getattr(settings, 'REVIEW_RATING_CHOICES', DEFAULT_REVIEW_RATING_CHOICES)
+        grade = min(max(int(round(float(rating))), 1), len(choices))
+        return choices[grade - 1][1]
+
+
 def get_review_user_weight(user, target):
     """
     Returns the rating weight for specific user.
@@ -89,3 +118,27 @@ def get_review_user_weight(user, target):
         return get_review_app().get_review_user_weight(user, target)
     else:
         return 1
+
+
+def get_review_api_user_serializer():
+    """
+    Returns the REST API serializer class for review author.
+    Requires Django REST framework.
+    """
+    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_api_user_serializer"):
+        return get_review_app().get_review_api_user_serializer()
+    else:
+        from reviews.api import UserSerializer
+        return UserSerializer
+
+
+def get_review_api_pagination_class():
+    """
+    Returns the REST API pagination class for review lists.
+    Requires Django REST framework.
+    """
+    if get_review_app_name() != DEFAULT_REVIEW_APP and hasattr(get_review_app(), "get_review_api_pagination_class"):
+        return get_review_app().get_review_api_pagination_class()
+    else:
+        from reviews.api import ReviewPagination
+        return ReviewPagination

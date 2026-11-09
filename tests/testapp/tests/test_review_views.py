@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.test.utils import override_settings
 
 from reviews import signals
 from reviews.models import REVIEW_MAX_LENGTH, Review
@@ -150,6 +152,15 @@ class ReviewViewTests(ReviewTestCase):
         self.assertEqual(r.ip_address, address[7:])
         self.assertEqual(r.rating, 4)
         self.assertEqual(r.comment, "This is my comment")
+
+    @override_settings(REVIEW_APP='api_reviews')
+    def testCreateReviewForCustomSite(self):
+        """Review site is determined by get_review_site_id hook"""
+        Site.objects.create(id=2, domain='api.example.com', name='api')
+        a = Article.objects.get(pk=1)
+        response = self.client.post("/post/", self.getValidData(a))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Review.objects.get().site_id, 2)
 
     def testPostAsAuthenticatedUser(self):
         a = Article.objects.get(pk=1)

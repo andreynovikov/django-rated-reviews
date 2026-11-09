@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _, ngettext
 
-from . import get_review_model, DEFAULT_REVIEW_RATING_CHOICES
+from . import get_review_model, get_review_rating_text, DEFAULT_REVIEW_RATING_CHOICES
 from .models import Review
 from .widgets import ObjectPkWidget
 
@@ -36,22 +36,21 @@ class ReviewAdminForm(forms.ModelForm):
 
 
 class ReviewAdmin(admin.ModelAdmin):
+    @admin.display(description=_('rating'), ordering='rating')
     @mark_safe
     def rating_text(self, obj):
         html = "<span style='display: inline-block; vertical-align: text-top; width: {}px; height: 12px; " \
             + "background: url({}reviews/img/star-full.svg)'>&nbsp;</span>&nbsp;{}{}"
         weight = ' &#215; {}'.format(obj.weight) if obj.weight != 1 else ''
-        return html.format(obj.rating * 12, settings.STATIC_URL, REVIEW_RATING_CHOICES[obj.rating - 1][1], weight)
-    rating_text.short_description = _('rating')
-    rating_text.admin_order_field = 'rating'
+        return html.format(obj.rating * 12, settings.STATIC_URL, get_review_rating_text(obj.rating), weight)
 
+    @admin.display(description=_('link'))
     @mark_safe
     def link(self, obj):
         if obj.is_public:
             return '<a href="{}">{}</a>'.format(obj.get_absolute_url(), REVIEW_ADMIN_LINK_SYMBOL)
         else:
             return ''
-    link.short_description = _('link')
 
     form = ReviewAdminForm
     fieldsets = (
@@ -89,11 +88,10 @@ class ReviewAdmin(admin.ModelAdmin):
         review.is_public = True
         review.save()
 
+    @admin.action(description=_("Approve selected reviews"))
     def approve_reviews(self, request, queryset):
         self._bulk_flag(request, queryset, self.perform_approve,
                         lambda n: ngettext('approved', 'approved', n))
-
-    approve_reviews.short_description = _("Approve selected reviews")
 
     def _bulk_flag(self, request, queryset, action, done_message):
         """

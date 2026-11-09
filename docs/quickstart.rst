@@ -5,6 +5,8 @@ Quick start guide
 To get started using the ``reviews`` app, follow these steps:
 
 #. Install the reviews app by running ``pip install django-rated-reviews``.
+   To use :doc:`REST API <api>`, install it with Django REST framework:
+   ``pip install "django-rated-reviews[api]"``.
 
 #. `Enable the "sites" framework <enabling-the-sites-framework>`_ by adding
    ``'django.contrib.sites'`` to ``INSTALLED_APPS`` and defining ``SITE_ID``.
@@ -19,13 +21,15 @@ To get started using the ``reviews`` app, follow these steps:
 
         urlpatterns = [
             ...
-            url(r'^reviews/', include('reviews.urls')),
+            path('reviews/', include('reviews.urls')),
             ...
         ]
 
 #. Use the `review template tags`_ below to embed reviews in your templates.
 
 You might also want to examine :ref:`the available settings <settings-reviews>`.
+If your site is rendered by a separate frontend, use :doc:`REST API <api>`
+instead of template tags.
 
 
 Review template tags
@@ -212,7 +216,7 @@ Redirecting after the review post
 To specify the URL you want to redirect to after the review has been posted,
 you can include a hidden form input called ``next`` in your review form. For example::
 
-    <input type="hidden" name="next" value="{% url 'review_was_posted' %}" />
+    <input type="hidden" name="next" value="{% url 'review-done' %}" />
 
 .. _notes-on-the-review-form:
 

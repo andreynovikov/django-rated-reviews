@@ -24,11 +24,14 @@ class ReviewFormTests(ReviewTestCase):
         self.assertNotEqual(f.initial['security_hash'], None)
         self.assertNotEqual(f.initial['timestamp'], None)
 
-    def testValidPost(self):
+    def getValidForm(self):
         a = Article.objects.get(pk=1)
         f = ReviewForm(a, data=self.getValidData(a))
         self.assertTrue(f.is_valid(), f.errors)
         return f
+
+    def testValidPost(self):
+        self.getValidForm()
 
     def tamperWithForm(self, **kwargs):
         a = Article.objects.get(pk=1)
@@ -58,7 +61,7 @@ class ReviewFormTests(ReviewTestCase):
         self.assertTrue("honeypot" in f.security_errors())
 
     def testGetReviewObject(self):
-        f = self.testValidPost()
+        f = self.getValidForm()
         r = f.get_review_object()
         self.assertTrue(isinstance(r, Review))
         self.assertEqual(r.content_object, Article.objects.get(pk=1))

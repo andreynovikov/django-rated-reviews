@@ -1,0 +1,154 @@
+# Publishes release to TestPyPI and PyPI, creates GitHub release and builds
+# documentation on Read the Docs when version tag (e.g. v2.0.0) is pushed.
+# Tag must match version in pyproject.toml.
+#
+# Uses PyPI trusted publishing, configure it once on both pypi.org and
+# test.pypi.org: project > Publishing > Add a new publisher > GitHub, with
+# workflow "publish.yaml" and environment "pypi" or "testpypi" respectively.
+#
+# Documentation is built with Read the Docs API, create API token in Read the
+# Docs account settings and save it as RTD_TOKEN repository secret.
+name: publish
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yaml
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10
+      - name: Check that tag matches package version
+        run: |
+          version=$(python3 -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package version $version"
+            exit 1
+          fi
+      - name: Build
+        run: uv build
+      - name: Check distribution
+        run: uvx twine check --strict dist/*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  publish-testpypi:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/django-rated-reviews
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  publish-pypi:
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/django-rated-reviews
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=""
+          if echo "$GITHUB_REF_NAME" | grep -qE '(a|b|rc)[0-9]+$'; then
+            prerelease="--prerelease"
+          fi
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            $prerelease
+
+  publish-docs:
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build documentation on Read the Docs
+        env:
+          RTD_TOKEN: ${{ secrets.RTD_TOKEN }}
+          RTD_PROJECT: https://readthedocs.org/api/v3/projects/django-rated-reviews
+        run: |
+          if [ -z "$RTD_TOKEN" ]; then
+            echo "::warning::RTD_TOKEN secret is not set, documentation is not published"
+            exit 0
+          fi
+          rtd() {
+            curl --fail-with-body --silent --show-error -H "Authorization: Token $RTD_TOKEN" "$@"
+          }
+          # Version slug on Read the Docs is the tag name
+          version=$(echo "$GITHUB_REF_NAME" | tr '[:upper:]' '[:lower:]')
+
+          # Make Read the Docs aware of the new tag, this also points "stable" to the newest release
+          rtd -X POST "$RTD_PROJECT/sync-versions/"
+          echo "Waiting for version $version to appear on Read the Docs"
+          for attempt in $(seq 30); do
+            if rtd -o /dev/null "$RTD_PROJECT/versions/$version/" 2> /dev/null; then
+              found=1
+              break
+            fi
+            sleep 10
+          done
+          if [ -z "${found:-}" ]; then
+            echo "::error::Version $version did not appear on Read the Docs"
+            exit 1
+          fi
+
+          # Activate and build documentation of the release
+          rtd -X PATCH -H "Content-Type: application/json" --data '{"active": true, "hidden": false}' \
+            "$RTD_PROJECT/versions/$version/"
+          rtd -X POST "$RTD_PROJECT/versions/$version/builds/"
+
+          # Rebuild "stable" for final releases, once it points to the new release
+          if ! echo "$version" | grep -qE '(a|b|rc)[0-9]+$'; then
+            for attempt in $(seq 30); do
+              stable=$(rtd "$RTD_PROJECT/versions/stable/" || true)
+              if grep -qE "\"ref\": *\"$version\"" <<< "$stable"; then
+                break
+              fi
+              sleep 10
+            done
+            rtd -X POST "$RTD_PROJECT/versions/stable/builds/"
+          fi
+
+          # Rebuild documentation of the default branch
+          rtd -X POST "$RTD_PROJECT/versions/latest/builds/"

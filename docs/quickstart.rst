@@ -159,6 +159,10 @@ Displaying the review post form
 To show the form that users will use to post a review, you can use
 ``render_review_form`` or ``get_review_form``
 
+A user has one review of an object. If the user has already reviewed the
+object, the form is filled with that review, and posting the form updates it.
+Anonymous users post a new review every time.
+
 Quickly rendering the review form
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

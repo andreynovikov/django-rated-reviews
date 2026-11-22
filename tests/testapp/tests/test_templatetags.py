@@ -1,9 +1,13 @@
+from datetime import timedelta
+
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.template import Template, Context
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
+from django.utils import timezone
 
 from reviews.forms import ReviewForm
 from reviews.models import Review
@@ -42,6 +46,19 @@ class ReviewTemplateTagTests(ReviewTestCase):
 
     def testWhitespaceInGetReviewFormTag(self):
         self.testGetReviewForm("{% load review_testtags %}{% get_review_form for a|noop:'x y' as form %}")
+
+    def testGetReviewFormEditsLatestUserReview(self):
+        """Duplicates posted by earlier versions don't break the form"""
+        user = User.objects.get(username="normaluser")
+        for comment, days in (("Old", 2), ("New", 1)):
+            Review.objects.create(content_type=ContentType.objects.get_for_model(Article), object_pk="1", user=user,
+                                  rating=3, comment=comment, site_id=settings.SITE_ID,
+                                  submit_date=timezone.now() - timedelta(days=days))
+        request = RequestFactory().get("/")
+        request.user = user
+        ctx, out = self.render("{% load reviews %}{% get_review_form for a as form %}",
+                               a=Article.objects.get(pk=1), request=request)
+        self.assertEqual(ctx["form"].initial["comment"], "New")
 
     def testRenderReviewForm(self, tag=None):
         t = "{% load reviews %}" + (tag or "{% render_review_form for testapp.article a.id %}")

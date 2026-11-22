@@ -1,12 +1,15 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.test.utils import override_settings
+from django.utils import timezone
 
 from reviews import signals
 from reviews.models import REVIEW_MAX_LENGTH, Review
 
-from . import ReviewTestCase
+from . import CT, ReviewTestCase
 from testapp.models import Article, Product
 
 
@@ -174,15 +177,58 @@ class ReviewViewTests(ReviewTestCase):
         u = User.objects.get(username='normaluser')
         self.assertEqual(r.user, u)
 
-    '''
-    def testPreventDuplicateReviews(self):
-        """Prevent posting the reviews twice by one user"""
+    def testPostTwiceUpdatesReview(self):
+        """A user has one review of an object, posting another one updates it"""
         a = Article.objects.get(pk=1)
-        data = self.getValidData(a)
-        self.client.post("/post/", data)
-        self.client.post("/post/", dict(data, comment="My second comment."))
-        self.assertEqual(Review.objects.count(), 1)
-    '''
+        self.client.login(username="normaluser", password="normaluser")
+        self.client.post("/post/", self.getValidData(a))
+        r = Review.objects.get()
+        r.is_public = True
+        r.save()
+        response = self.client.post("/post/", dict(self.getValidData(a), rating="2", comment="My second comment."))
+        self.assertEqual(response.status_code, 302)
+        updated = Review.objects.get()
+        self.assertEqual(updated.pk, r.pk)
+        self.assertEqual(updated.rating, 2)
+        self.assertEqual(updated.comment, "My second comment.")
+        self.assertFalse(updated.is_public)
+
+    def testPostTwiceAnonymously(self):
+        """Anonymous reviews belong to nobody, so each post adds one"""
+        a = Article.objects.get(pk=1)
+        self.client.post("/post/", self.getValidData(a))
+        self.client.post("/post/", dict(self.getValidData(a), comment="My second comment."))
+        self.assertEqual(Review.objects.count(), 2)
+
+    def testPostUpdatesLatestDuplicate(self):
+        """Duplicates posted by earlier versions remain, the latest one is updated"""
+        a = Article.objects.get(pk=1)
+        u = User.objects.get(username="normaluser")
+        old, new = [
+            Review.objects.create(content_type=CT(Article), object_pk="1", user=u, rating=3, comment=comment,
+                                  site_id=settings.SITE_ID, submit_date=timezone.now() - timedelta(days=days))
+            for comment, days in (("Old", 2), ("New", 1))
+        ]
+        self.client.login(username="normaluser", password="normaluser")
+        self.client.post("/post/", self.getValidData(a))
+        self.assertEqual(Review.objects.count(), 2)
+        old.refresh_from_db()
+        new.refresh_from_db()
+        self.assertEqual(old.comment, "Old")
+        self.assertEqual(new.comment, "This is my comment")
+
+    @override_settings(REVIEW_APP='api_reviews')
+    def testPostOnOtherSiteAddsReview(self):
+        """The review of an object on another site is a separate one"""
+        Site.objects.create(id=2, domain='api.example.com', name='api')
+        a = Article.objects.get(pk=1)
+        u = User.objects.get(username="normaluser")
+        Review.objects.create(content_type=CT(Article), object_pk="1", user=u, rating=3, comment="Site 1",
+                              site_id=settings.SITE_ID, submit_date=timezone.now())
+        self.client.login(username="normaluser", password="normaluser")
+        self.client.post("/post/", self.getValidData(a))
+        self.assertEqual(list(Review.objects.order_by('site_id').values_list('site_id', 'comment')),
+                         [(1, "Site 1"), (2, "This is my comment")])
 
     def testReviewSignals(self):
         """Test signals emitted by the review posting view"""

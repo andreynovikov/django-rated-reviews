@@ -341,6 +341,10 @@ site (see :func:`~reviews.get_review_site_id`) and rating weight (see
 :func:`~reviews.get_review_user_weight`), and
 ``reviews.signals.review_was_posted`` signal is sent.
 
+A user has one review of an object. If the user has already reviewed the
+object, posting updates that review, as :ref:`modifying <api-modify>` does,
+and the response is ``200 OK`` instead of ``201 Created``.
+
 .. _api-modify:
 
 Modifying a review

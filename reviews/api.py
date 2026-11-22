@@ -10,7 +10,7 @@ from django.db.models.functions import Cast
 from django.utils.encoding import smart_str
 
 try:
-    from rest_framework import viewsets, serializers
+    from rest_framework import viewsets, serializers, status
     from rest_framework.decorators import action
     from rest_framework.exceptions import NotFound, ParseError
     from rest_framework.pagination import PageNumberPagination
@@ -26,6 +26,7 @@ from . import (
     signals, get_review_model, get_review_form, get_review_site_id, get_review_rating_text,
     get_review_user_weight, get_review_api_user_serializer, get_review_api_pagination_class
 )
+from .utils import get_user_review
 
 
 # Fields that are never exposed and can not be used for filtering
@@ -158,9 +159,16 @@ class ReviewActionSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         request = self.context['request']
-        review = self.cleaned_form.get_review_object(site_id=get_review_site_id(request))
-        if request.user.is_authenticated:
-            review.user = request.user
+        # A user has one review of an object, so posting another one updates it
+        site_id = get_review_site_id(request)
+        review = get_user_review(self.cleaned_form.get_review_model(), self.target, request.user, site_id)
+        self.updated_existing = review is not None
+        if review is not None:
+            self.cleaned_form.update_review_object(review)
+        else:
+            review = self.cleaned_form.get_review_object(site_id=site_id)
+            if request.user.is_authenticated:
+                review.user = request.user
         return self.save_review(review)
 
     def update(self, instance, validated_data):
@@ -209,6 +217,18 @@ class ReviewViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
+    def create(self, request, *args, **kwargs):
+        """
+        Post a review. If the user has already reviewed the object, that
+        review is updated and the response is ``200 OK``, not ``201 Created``.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        code = status.HTTP_200_OK if getattr(serializer, 'updated_existing', False) else status.HTTP_201_CREATED
+        return Response(serializer.data, status=code, headers=headers)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 
 from . import signals, get_review_model, get_review_form, get_review_site_id, get_review_user_weight
+from .utils import get_user_review
 
 
 SHOW_RATING_TEXT = getattr(settings, 'REVIEW_SHOW_RATING_TEXT', True)
@@ -90,10 +91,15 @@ def post_review(request, next=None, using=None):
             return ReviewPostBadRequest("User spoofing")
         form.update_review_object(review)
     else:
-        # Otherwise create the review
-        review = form.get_review_object(site_id=get_review_site_id(request))
-        if request.user.is_authenticated:
-            review.user = request.user
+        # A user has one review of an object, so posting another one updates it
+        site_id = get_review_site_id(request)
+        review = get_user_review(form.get_review_model(), target, request.user, site_id)
+        if review is not None:
+            form.update_review_object(review)
+        else:
+            review = form.get_review_object(site_id=site_id)
+            if request.user.is_authenticated:
+                review.user = request.user
 
     review.weight = get_review_user_weight(request.user, target)
     review.ip_address = request.META.get("REMOTE_ADDR", None) or None

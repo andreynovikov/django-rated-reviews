@@ -315,6 +315,29 @@ class ReviewAPIWriteTests(ReviewAPITestCase):
         self.assertEqual(response.status_code, 201, response.content)
         self.assertEqual(Review.objects.get().content_object, self.product)
 
+    def testCreateTwiceUpdatesReview(self):
+        received = self.connect_signal()
+        self.client.force_login(self.user)
+        first = self.post(object_url(self.product), self.getValidData(self.product))
+        self.assertEqual(first.status_code, 201, first.content)
+        second = self.post(object_url(self.product),
+                           dict(self.getValidData(self.product), rating='2', comment='Changed my mind'))
+        self.assertEqual(second.status_code, 200, second.content)
+        review = Review.objects.get()
+        self.assertEqual(review.rating, 2)
+        self.assertEqual(review.comment, 'Changed my mind')
+        self.assertEqual(second.json()['id'], review.pk)
+        self.assertEqual(received, [review.pk, review.pk])
+
+    def testCreateAfterOtherUsersReview(self):
+        other = self.review(self.product, 5, user=self.author)
+        self.client.force_login(self.user)
+        response = self.post(object_url(self.product), self.getValidData(self.product))
+        self.assertEqual(response.status_code, 201, response.content)
+        self.assertEqual(Review.objects.count(), 2)
+        other.refresh_from_db()
+        self.assertEqual(other.rating, 5)
+
     def testCreateInvalid(self):
         form = ReviewForm(self.product)
         expired = int(time.time()) - 3 * 60 * 60

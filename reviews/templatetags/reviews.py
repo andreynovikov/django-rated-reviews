@@ -11,6 +11,7 @@ from .. import (
     get_review_model, get_review_site_id, get_review_form as get_form, get_review_form_target,
     get_review_rating_text, DEFAULT_REVIEW_RATING_CHOICES
 )
+from ..utils import get_user_review
 
 
 SHOW_RATING_TEXT = getattr(settings, 'REVIEW_SHOW_RATING_TEXT', True)
@@ -156,20 +157,11 @@ class ReviewFormNode(BaseReviewNode):
     def get_form(self, context):
         obj = self.get_object(context)
         if obj:
-            field_names = [f.name for f in self.review_model._meta.fields]
-            if 'user' in field_names and ('request' in context) and context['request'].user:
-                site_id = get_review_site_id(context.get('request'))
-                try:
-                    content_type = ContentType.objects.get_for_model(obj)
-                    review = self.review_model.objects.get(
-                        content_type=content_type,
-                        object_pk=smart_str(obj.pk),
-                        site__pk=site_id,
-                        user=context['request'].user
-                    )
-                    return get_form()(obj, initial=model_to_dict(review))
-                except self.review_model.DoesNotExist:
-                    pass
+            # The user's own review is edited, the latest one if there are several
+            request = context.get('request')
+            review = get_user_review(self.review_model, obj, getattr(request, 'user', None), get_review_site_id(request))
+            if review is not None:
+                return get_form()(obj, initial=model_to_dict(review))
             return get_form()(obj)
         else:
             return None

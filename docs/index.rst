@@ -32,3 +32,4 @@ Contents
    templatetags
    api
    models
+   signals

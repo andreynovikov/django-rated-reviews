@@ -83,13 +83,17 @@ def post_review(request, next=None, using=None):
 
     # Get existing review
     if form.cleaned_data["id"] is not None:
+        review_model = form.get_review_model()
         try:
-            review = form.get_review_model().objects.get(pk=form.cleaned_data["id"])
-        except model.DoesNotExist:
+            review = review_model.objects.get(pk=form.cleaned_data["id"])
+        except review_model.DoesNotExist:
             return ReviewPostBadRequest("Referenced object gone")
         if review.user != request.user:
             return ReviewPostBadRequest("User spoofing")
-        form.update_review_object(review)
+        try:
+            form.update_review_object(review)
+        except ValueError as e:
+            return ReviewPostBadRequest(str(e))
     else:
         # A user has one review of an object, so posting another one updates it
         site_id = get_review_site_id(request)

@@ -177,6 +177,26 @@ class ReviewViewTests(ReviewTestCase):
         u = User.objects.get(username='normaluser')
         self.assertEqual(r.user, u)
 
+    def testPostGoneReview(self):
+        """The id of a review that does not exist is a bad request"""
+        a = Article.objects.get(pk=1)
+        self.client.login(username="normaluser", password="normaluser")
+        response = self.client.post("/post/", dict(self.getValidData(a), id="999"))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(Review.objects.count(), 0)
+
+    def testPostReviewOfOtherObject(self):
+        """The id of the user's review of another object is a bad request"""
+        u = User.objects.get(username="normaluser")
+        other = Review.objects.create(content_type=CT(Product), object_pk="1", user=u, rating=3, comment="Product",
+                                      site_id=settings.SITE_ID, submit_date=timezone.now())
+        a = Article.objects.get(pk=1)
+        self.client.login(username="normaluser", password="normaluser")
+        response = self.client.post("/post/", dict(self.getValidData(a), id=str(other.pk)))
+        self.assertEqual(response.status_code, 400)
+        other.refresh_from_db()
+        self.assertEqual(other.comment, "Product")
+
     def testPostTwiceUpdatesReview(self):
         """A user has one review of an object, posting another one updates it"""
         a = Article.objects.get(pk=1)
